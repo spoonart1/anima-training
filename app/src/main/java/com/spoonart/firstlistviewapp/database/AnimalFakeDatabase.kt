@@ -48,7 +48,9 @@ internal class AnimalFakeDatabase {
         return list.find { it.id == id }
     }
 
-    fun getAnimals() = list
+    fun getAnimals() : List<Animal>{
+        return list.reversed()
+    }
 
     fun setDatabaseListener(listener: DatabaseListener) {
         this.listener = listener

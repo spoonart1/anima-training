@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.spoonart.firstlistviewapp.R
 import com.spoonart.firstlistviewapp.adapter.AnimalAdapter
+import com.spoonart.firstlistviewapp.database.AnimalFakeDatabase
 import com.spoonart.firstlistviewapp.database.AnimalRepository
 import com.spoonart.firstlistviewapp.database.AnimalRepositoryImpl
 import com.spoonart.firstlistviewapp.database.DatabaseListener
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        title = "Animals"
 
         animalListView = findViewById(R.id.recyclerview)
         animalListView.layoutManager = LinearLayoutManager(this)
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         fab.setOnClickListener {
             CrudActivity.start(this, mode = CrudActivity.MODE_CREATE)
         }
+        AnimalFakeDatabase.instance.setDatabaseListener(this)
     }
 
     private fun setData(animals: List<Animal>) {
@@ -46,16 +49,23 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         }
     }
 
+    private fun refreshAdapter(){
+        setData(animalRepository.getAnimals())
+    }
+
     override fun onObjectInserted(inserted: Animal, size: Int) {
         println("INSERTED new animal with name: ${inserted.name} and note: ${inserted.note}, id: ${inserted.id}")
+        refreshAdapter()
     }
 
     override fun onObjectRemoved(removed: Animal, size: Int) {
         println("REMOVED animal with name: ${removed.name} and note: ${removed.note}, id: ${removed.id}")
+        refreshAdapter()
     }
 
     override fun onObjectUpdated(updated: Animal, affected: Int) {
         println("UPDATED animal with name: ${updated.name} and note: ${updated.note}, id: ${updated.id}")
+        refreshAdapter()
     }
 
 }

@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.spoonart.firstlistviewapp.R
@@ -33,7 +35,7 @@ class CrudActivity : AppCompatActivity() {
         const val MODE_CREATE = 2
 
         fun start(context: Context, mode: Int, animalId: String? = null) {
-            val intent = Intent()
+            val intent = Intent(context, CrudActivity::class.java)
             intent.putExtra("mode", mode)
             intent.putExtra("animal_id", animalId)
             context.startActivity(intent)
@@ -54,6 +56,34 @@ class CrudActivity : AppCompatActivity() {
 
         saveBtn.setOnClickListener {
             saveData(etName.text, etDesc.text)
+        }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.home || item.itemId == android.R.id.home) {
+            promptExit()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun promptExit() {
+        if (shouldPromptExistDialog()) {
+            val dialog = AlertDialog.Builder(this)
+                .setTitle("Exit?")
+                .setMessage("You have unsaved data, discard anyway?")
+                .setPositiveButton("Discard") { dialog, which ->
+                    finish()
+                }
+                .setNegativeButton("Cancel") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .create()
+
+            dialog.show()
+        }else{
+            finish()
         }
     }
 
@@ -110,6 +140,9 @@ class CrudActivity : AppCompatActivity() {
         return repository.getAnimalBy(id)
     }
 
+    private fun shouldPromptExistDialog(): Boolean {
+        return !etName.text.isNullOrEmpty() or !etDesc.text.isNullOrEmpty()
+    }
 
     sealed class Validation(var message: String) {
         object InvalidName : Validation("Name cannot be empty")
