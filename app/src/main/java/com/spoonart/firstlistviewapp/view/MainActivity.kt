@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
         fab.setOnClickListener {
             CrudActivity.start(this, mode = CrudActivity.MODE_CREATE)
         }
-        AnimalFakeDatabase.instance.setDatabaseListener(this)
+        animalRepository.setDatabaseListener(this)
     }
 
     private fun setData(animals: List<Animal>) {
@@ -54,17 +54,17 @@ class MainActivity : AppCompatActivity(), DatabaseListener {
     }
 
     override fun onObjectInserted(inserted: Animal, size: Int) {
-        println("INSERTED new animal with name: ${inserted.name} and note: ${inserted.note}, id: ${inserted.id}")
+        println("INSERT new animal with name: ${inserted.name} and note: ${inserted.note}, id: ${inserted.id}")
         refreshAdapter()
     }
 
     override fun onObjectRemoved(removed: Animal, size: Int) {
-        println("REMOVED animal with name: ${removed.name} and note: ${removed.note}, id: ${removed.id}")
+        println("REMOVE animal with name: ${removed.name} and note: ${removed.note}, id: ${removed.id}")
         refreshAdapter()
     }
 
     override fun onObjectUpdated(updated: Animal, affected: Int) {
-        println("UPDATED animal with name: ${updated.name} and note: ${updated.note}, id: ${updated.id}")
+        println("UPDATE animal with name: ${updated.name} and note: ${updated.note}, id: ${updated.id}")
         refreshAdapter()
     }
 

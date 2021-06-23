@@ -3,8 +3,10 @@ package com.spoonart.firstlistviewapp.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.spoonart.firstlistviewapp.R
 import com.spoonart.firstlistviewapp.database.AnimalRepository
@@ -31,16 +33,17 @@ class DetailActivity : AppCompatActivity() {
         findViewById(R.id.textView3)
     }
 
-    private val animalRepository: AnimalRepository = AnimalRepositoryImpl()
+    private val repository: AnimalRepository = AnimalRepositoryImpl()
+    private var currentAnimal : Animal? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        val animal = getAnimal()
-        if (animal != null) {
-            tvName.text = "My Animal is ${animal.name}"
-            tvDetails.text = animal.note
+        currentAnimal = getAnimal()
+        if (currentAnimal != null) {
+            tvName.text = "My Animal is ${currentAnimal!!.name}"
+            tvDetails.text = currentAnimal!!.note
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -50,9 +53,14 @@ class DetailActivity : AppCompatActivity() {
     private fun getAnimal(): Animal? {
         val id = intent?.getStringExtra(KEY_ID)
         if (id != null) {
-            return animalRepository.getAnimalBy(id)
+            return repository.getAnimalBy(id)
         }
         return null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_delete, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -60,7 +68,22 @@ class DetailActivity : AppCompatActivity() {
             finish()
             return true
         }
+        else if (item.itemId == R.id.opt_delete){
+            currentAnimal?.let {
+                removeData(it)
+                toast("${it.name} has been removed")
+                finish()
+            }
+        }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun toast(message:String){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun removeData(animal: Animal){
+        repository.delete(animal)
     }
 
 }

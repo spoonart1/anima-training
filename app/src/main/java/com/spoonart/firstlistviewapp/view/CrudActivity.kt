@@ -63,7 +63,6 @@ class CrudActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.home || item.itemId == android.R.id.home) {
             promptExit()
-            return true
         }
         return super.onOptionsItemSelected(item)
     }
@@ -106,8 +105,6 @@ class CrudActivity : AppCompatActivity() {
 
     private fun saveData(name: Editable?, description: Editable?) {
         val validation = validation(name, description)
-
-        //validate first
         if (validation == Validation.Valid) {
             finish()
         } else {
